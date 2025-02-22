@@ -1,0 +1,38 @@
+version: "3.8"
+services:
+  vllm:
+    image: vllm/vllm-openai:latest
+    runtime: nvidia
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    ports:
+      - "8000:8000"
+    volumes:
+      - /path/to/models:/app/model
+    command: ["--model", "/app/model/Mistral-7B-v0.1"] #adjust model name
+  frontend:
+    build:
+      context: ./frontend
+    ports:
+      - "7860:7860"
+    container_name: container_frontend
+    depends_on:
+      - vllm
+    environment:
+      - GRADIO_SERVER_NAME=0.0.0.0
+      - CONTAINER_PORT=7860
+      - HOST_PORT=7860
+    volumes:
+      - ./frontend:/usr/src/app
+      - /home/cloud/.cache/huggingface:/root/.cache/huggingface
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - capabilities: [gpu]
+    restart: unless-stopped
