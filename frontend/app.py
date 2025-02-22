@@ -24,7 +24,7 @@ def change_vllm_image(container_name, new_image, model_path, port, gpu_ids="all"
             gpus=gpu_ids,
             ports={f"{port}/tcp": port},
             volumes={model_path: {"bind": "/app/model", "mode": "rw"}},
-            command=["--model", f"/app/model/{model_name}"],
+            command=["--model", f"Qwen/Qwen2.5-1.5B-Instruct"],
             detach=True
         )
         print(f"Container '{container_name}' started with image '{new_image}'.")
